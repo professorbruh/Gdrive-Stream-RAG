@@ -166,4 +166,9 @@ class HuggingFaceModel:
             return response.json().get("text", "")
         except Exception as e:
             print(f"Error calling remote LLM server at {config.LLM_REMOTE_URL}: {e}")
-            return f"Error: Could not reach the remote LLM Server at {config.LLM_REMOTE_URL}."
+            return (
+                f"🤖 **Uh oh!** The server tried to the GPU at `{config.LLM_REMOTE_URL}`, "
+                f"but it didn't pick up the phone! 📱💥\n\n"
+                f"Perhaps admin is playing video games instead of running the LLM? "
+                f"Admin pls!"
+            )
