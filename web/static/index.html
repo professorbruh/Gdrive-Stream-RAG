@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveStream AI — Codebase Assistant</title>
+    <meta name="description" content="Ask questions about the DriveStream event streaming platform codebase using AI-powered retrieval augmented generation.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- ── Sidebar ──────────────────────────────────── -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <span class="logo-text">DriveStream<span class="logo-ai">AI</span></span>
+                </div>
+                <p class="logo-subtitle">Codebase Assistant</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" data-mode="ask" id="nav-ask">
+                    <span class="nav-icon">💬</span>
+                    <span>Ask Codebase</span>
+                </button>
+                <button class="nav-btn" data-mode="search" id="nav-search">
+                    <span class="nav-icon">🔍</span>
+                    <span>Search Code</span>
+                </button>
+                <button class="nav-btn" data-mode="explain" id="nav-explain">
+                    <span class="nav-icon">📖</span>
+                    <span>Explain Class</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-info">
+                <div class="info-card">
+                    <h4>About DriveStream</h4>
+                    <p>A Kafka-inspired event streaming platform using Google Drive as storage. Built with Java 21.</p>
+                </div>
+                <div class="class-list">
+                    <h4>Classes</h4>
+                    <div class="class-chips">
+                        <button class="chip" onclick="explainClass('EventStreamEngine')">EventStreamEngine</button>
+                        <button class="chip" onclick="explainClass('TopicManager')">TopicManager</button>
+                        <button class="chip" onclick="explainClass('PartitionManager')">PartitionManager</button>
+                        <button class="chip" onclick="explainClass('OffsetManager')">OffsetManager</button>
+                        <button class="chip" onclick="explainClass('DriveStreamProducer')">DriveStreamProducer</button>
+                        <button class="chip" onclick="explainClass('DriveStreamConsumer')">DriveStreamConsumer</button>
+                        <button class="chip" onclick="explainClass('GoogleDriveStorageService')">GoogleDriveStorageService</button>
+                        <button class="chip" onclick="explainClass('GoogleDriveConfig')">GoogleDriveConfig</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div id="health-status" class="health-indicator">
+                    <span class="health-dot"></span>
+                    <span class="health-text">Connecting...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ── Main Chat Area ───────────────────────────── -->
+        <main id="main-content" class="main">
+            <header class="main-header">
+                <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle sidebar">☰</button>
+                <h1 id="main-title">Ask about DriveStream</h1>
+                <div class="header-badge" id="model-badge">
+                    <span class="badge-dot"></span>
+                    <span id="model-name">Loading...</span>
+                </div>
+            </header>
+
+            <div id="messages" class="messages">
+                <!-- Welcome message -->
+                <div class="message assistant welcome-message">
+                    <div class="message-avatar">⚡</div>
+                    <div class="message-content">
+                        <div class="message-text">
+                            <h2>Welcome to DriveStream AI</h2>
+                            <p>I can answer questions about the DriveStream codebase — a Kafka-inspired event streaming platform that uses Google Drive as storage.</p>
+                            <div class="suggestions">
+                                <h4>Try asking:</h4>
+                                <button class="suggestion" onclick="askSuggestion(this)">How does event partition routing work?</button>
+                                <button class="suggestion" onclick="askSuggestion(this)">How are consumer offsets tracked and committed?</button>
+                                <button class="suggestion" onclick="askSuggestion(this)">Explain the Google Drive authentication flow</button>
+                                <button class="suggestion" onclick="askSuggestion(this)">What's the architecture of the EventStreamEngine?</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <form id="input-form" class="input-form">
+                    <div class="input-wrapper">
+                        <textarea 
+                            id="user-input" 
+                            placeholder="Ask a question about DriveStream..."
+                            rows="1"
+                            autofocus
+                        ></textarea>
+                        <button type="submit" id="send-btn" class="send-btn" disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="input-hint">
+                        Powered by RAG with <span id="vector-count">—</span> code embeddings
+                    </p>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

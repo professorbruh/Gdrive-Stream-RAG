@@ -1,0 +1,29 @@
+name: Deploy to GCP Compute Engine
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Deploy to VM
+        run: |
+          # Use gcloud compute ssh to execute the deployment script on the VM
+          gcloud compute ssh --zone "${{ secrets.GCP_ZONE }}" "${{ secrets.GCP_INSTANCE_NAME }}" \
+            --command "bash ~/rag-mcp/scripts/deploy.sh"

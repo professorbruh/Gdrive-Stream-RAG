@@ -1,0 +1,23 @@
+[Unit]
+Description=DriveStream RAG-MCP Web Service
+After=network.target
+
+[Service]
+# IMPORTANT: Change 'youruser' to your actual GCP VM linux username
+User=youruser
+Group=youruser
+
+# Define the working directory and environment path
+WorkingDirectory=/home/youruser/rag-mcp
+Environment="PATH=/home/youruser/rag-mcp/.venv/bin"
+
+# Start the web server on port 80 (requires authbind or port forwarding if not run as root)
+# Alternatively, leave as 8000 and use Nginx to reverse proxy port 80 -> 8000
+ExecStart=/home/youruser/rag-mcp/.venv/bin/python run.py web
+
+# Automatically restart if the process crashes
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
