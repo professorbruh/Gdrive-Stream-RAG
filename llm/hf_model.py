@@ -188,7 +188,8 @@ class HuggingFaceModel:
                 timeout=10, 
                 headers={"ngrok-skip-browser-warning": "true"}
             )
-            return resp.status_code == 200
+            if resp.status_code == 200:
+                return True
+            return f"Status {resp.status_code}: {resp.text}"
         except Exception as e:
-            print(f"Health check failed: {e}")
-            return False
+            return f"Error: {e}"
