@@ -14,8 +14,8 @@ fi
 cd "$APP_DIR"
 
 # 2. Pull the latest code from GitHub
-echo "Pulling latest code from main branch..."
-git pull origin main
+echo "Pulling latest code from master branch..."
+git pull origin master
 
 # 3. Setup virtual environment if it doesn't exist
 if [ ! -d ".venv" ]; then

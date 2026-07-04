@@ -120,7 +120,7 @@ You need to clone the repo on the VM so the deploy script knows where it is.
 ## Step 8: Trigger the Deployment!
 Now everything is wired up.
 1. Make a small change to any file locally (or just run `git commit --allow-empty -m "Trigger deployment"`).
-2. Run `git push origin main`.
+2. Run `git push origin master`.
 3. Go to the **Actions** tab on your GitHub repository.
 4. Watch the pipeline run! It will SSH into your VM, install Caddy, pull the code, install python dependencies, and restart the server.
 
