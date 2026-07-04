@@ -143,13 +143,22 @@ class HuggingFaceModel:
 
     def _generate_api(self, prompt: str, max_new_tokens: int) -> str:
         """Generates text using the HuggingFace Inference API."""
-        response = self.client.text_generation(
-            prompt,
-            max_new_tokens=max_new_tokens,
-            temperature=config.LLM_TEMPERATURE,
-            top_p=config.LLM_TOP_P,
-        )
-        return response.strip()
+        try:
+            messages = [{"role": "user", "content": prompt}]
+            response = self.client.chat_completion(
+                messages,
+                max_tokens=max_new_tokens,
+                temperature=config.LLM_TEMPERATURE,
+                top_p=config.LLM_TOP_P,
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            # Check for HuggingFace rate limits or pay-as-you-go billing errors
+            error_msg = str(e).lower()
+            # If we see a 402 Payment Required or any mention of billing/payment, deny access
+            if "402" in error_msg or "payment" in error_msg or "billing" in error_msg or "pro subscription" in error_msg:
+                raise Exception("[COST_LIMIT] HuggingFace API requested payment. Access Denied.")
+            raise e
 
     def _generate_remote(self, prompt: str, max_new_tokens: int) -> str:
         """Generates text by sending a POST request to a local GPU server (e.g. from AWS)."""

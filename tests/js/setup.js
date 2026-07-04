@@ -37,6 +37,13 @@ const html = `
         <span id="vector-count">0</span>
       </div>
       <div class="sidebar-footer">
+        <div class="llm-mode-switch" id="llm-mode-container">
+          <label for="llm-mode-select">API Mode:</label>
+          <select id="llm-mode-select">
+            <option value="remote">Remote API</option>
+            <option value="hf_api">HuggingFace API</option>
+          </select>
+        </div>
         <div id="health-status" class="health-indicator">
           <span class="health-dot"></span>
           <span class="health-text">Connecting...</span>

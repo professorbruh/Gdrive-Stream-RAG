@@ -270,6 +270,42 @@ body {
     border-top: 1px solid var(--border-subtle);
 }
 
+.llm-mode-switch {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.llm-mode-switch label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-tertiary);
+}
+
+#llm-mode-select {
+    width: 100%;
+    background: var(--bg-deep);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 6px 8px;
+    font-size: 13px;
+    font-family: var(--font-sans);
+    outline: none;
+}
+
+#llm-mode-select:focus {
+    border-color: var(--accent-primary);
+}
+
+#llm-mode-select:disabled,
+#llm-mode-select option:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .health-indicator {
     display: flex;
     align-items: center;

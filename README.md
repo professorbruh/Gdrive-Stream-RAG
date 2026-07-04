@@ -29,7 +29,7 @@ graph TD
 2. **Retrieval (`retrieval/`)**: Performs cosine similarity search against ChromaDB to assemble relevant context for queries.
 3. **Generation (`llm/`)**: Supports local GPU inference (`local` mode), remote server proxying (`remote` mode), or cloud APIs (`hf_api` mode) for rapid, high-quality code generation.
 4. **Interfaces**:
-   - **Web UI (`web/`)**: A premium dark-mode chat interface built with FastAPI. 🌍 **[Try the Live Demo!](https://drivestream-rag.duckdns.org/)** Automatically deployed via GitHub Actions to an Oracle Cloud VM, monitored by OCI APM OpenTelemetry.
+   - **Web UI (`web/`)**: A premium dark-mode chat interface built with FastAPI. It features a dynamic **API Mode Toggle** allowing you to switch between Remote and HuggingFace APIs on the fly (with automatic cost-limit protection). 🌍 **[Try the Live Demo!](https://drivestream-rag.duckdns.org/)** Automatically deployed via GitHub Actions to an Oracle Cloud VM, monitored by OCI APM OpenTelemetry.
    - **MCP Server (`mcp_server/`)**: Exposes the codebase tools (`ask_codebase`, `search_code`, `explain_class`) to external AI assistants via the Model Context Protocol.
 
 ---
@@ -81,7 +81,7 @@ All configuration is managed via environment variables. For local development, c
 HF_TOKEN=your_huggingface_token_here
 
 # LLM Backend Mode ("local", "remote", "hf_api")
-LLM_MODE=local
+LLM_MODE=hf_api
 
 # If using "remote" mode (e.g., pointing to an Ngrok tunnel hosting the LLM):
 LLM_REMOTE_URL=https://your-tunnel.ngrok-free.app/generate
@@ -135,7 +135,7 @@ python run.py mcp --transport sse --port 8001
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `LLM_MODEL` | `Qwen/Qwen2.5-Coder-3B-Instruct` | The HuggingFace model ID to use. |
-| `LLM_MODE` | `local` | `local` (GPU), `remote` (Proxy to external server), or `hf_api`. |
+| `LLM_MODE` | `hf_api` | `local` (GPU), `remote` (Proxy to external server), or `hf_api`. |
 | `LLM_REMOTE_URL` | `http://localhost:8080/generate` | The endpoint URL if `LLM_MODE=remote`. |
 | `LLM_LOAD_IN_4BIT` | `false` | Enable bitsandbytes 4-bit quantization (requires compatible kernels). |
 | `RETRIEVAL_TOP_K` | `6` | Number of code chunks to retrieve for context. |

@@ -7,6 +7,8 @@
 
 let currentMode = 'ask';  // 'ask' | 'search' | 'explain'
 let isLoading = false;
+let currentLlmMode = null;
+let hfAccessDenied = false;
 
 const API_BASE = '';  // Same origin
 
@@ -23,6 +25,7 @@ const healthDot = document.querySelector('.health-dot');
 const healthText = document.querySelector('.health-text');
 const sidebarToggle = document.getElementById('sidebar-toggle');
 const sidebar = document.getElementById('sidebar');
+const llmModeSelect = document.getElementById('llm-mode-select');
 
 // ── Initialize ──────────────────────────────────────────────────────
 
@@ -61,6 +64,13 @@ function setupEventListeners() {
 
     // Sidebar toggle (mobile)
     sidebarToggle.addEventListener('click', toggleSidebar);
+
+    // LLM Mode toggle
+    if (llmModeSelect) {
+        llmModeSelect.addEventListener('change', (e) => {
+            currentLlmMode = e.target.value;
+        });
+    }
 }
 
 
@@ -109,26 +119,47 @@ async function handleSubmit(e) {
 
     try {
         let data;
+        let payload = {};
+        if (currentLlmMode) payload.llm_mode = currentLlmMode;
 
         if (currentMode === 'ask') {
-            data = await apiCall('/api/ask', { question: text });
+            payload.question = text;
+            data = await apiCall('/api/ask', payload);
             removeTypingIndicator(typingEl);
             addAssistantMessage(data.answer, data.sources);
 
         } else if (currentMode === 'search') {
-            data = await apiCall('/api/search', { query: text });
+            payload.query = text;
+            // Search request does not use llm_mode, but let's pass it anyway or omit it. The backend model doesn't accept it.
+            // Oh wait, SearchRequest in app.py doesn't have llm_mode, so we should delete it if we added it to payload.
+            delete payload.llm_mode;
+            data = await apiCall('/api/search', payload);
             removeTypingIndicator(typingEl);
             addSearchResults(data.results);
 
         } else if (currentMode === 'explain') {
-            data = await apiCall('/api/explain', { class_name: text });
+            payload.class_name = text;
+            if (currentLlmMode) payload.llm_mode = currentLlmMode;
+            data = await apiCall('/api/explain', payload);
             removeTypingIndicator(typingEl);
             addAssistantMessage(data.explanation, data.sources);
         }
 
     } catch (err) {
         removeTypingIndicator(typingEl);
-        addErrorMessage(err.message || 'Something went wrong. Is the server running?');
+        if (err.message.includes('[COST_LIMIT]')) {
+            hfAccessDenied = true;
+            if (llmModeSelect) {
+                llmModeSelect.value = 'remote';
+                currentLlmMode = 'remote';
+                Array.from(llmModeSelect.options).forEach(opt => {
+                    if (opt.value === 'hf_api') opt.disabled = true;
+                });
+            }
+            addErrorMessage('HuggingFace API access disabled due to potential cost. Switched to Remote API. Please try your request again.');
+        } else {
+            addErrorMessage(err.message || 'Something went wrong. Is the server running?');
+        }
     } finally {
         isLoading = false;
         sendBtn.disabled = !userInput.value.trim();
@@ -165,6 +196,12 @@ async function checkHealth() {
             healthText.textContent = `GPU Online · ${data.vectors} vectors`;
             modelBadge.textContent = data.model.split('/').pop();
             vectorCount.textContent = data.vectors;
+
+            // Set default mode on first load if not set
+            if (currentLlmMode === null && data.mode && llmModeSelect && !hfAccessDenied) {
+                currentLlmMode = data.mode;
+                llmModeSelect.value = data.mode;
+            }
         } else {
             healthDot.classList.add('error');
             healthDot.classList.remove('online');

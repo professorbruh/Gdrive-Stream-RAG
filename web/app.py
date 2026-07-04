@@ -32,6 +32,7 @@ import config
 class AskRequest(BaseModel):
     question: str = Field(..., min_length=1, max_length=2000)
     top_k: int = Field(default=6, ge=1, le=20)
+    llm_mode: str = Field(default=None)
 
 class SearchRequest(BaseModel):
     query: str = Field(..., min_length=1, max_length=500)
@@ -39,6 +40,7 @@ class SearchRequest(BaseModel):
 
 class ExplainRequest(BaseModel):
     class_name: str = Field(..., min_length=1, max_length=100)
+    llm_mode: str = Field(default=None)
 
 
 # ── FastAPI App ──────────────────────────────────────────────────────
@@ -122,7 +124,7 @@ async def ask(request: AskRequest):
     """Ask a question about the DriveStream codebase."""
     try:
         engine = _get_rag_engine()
-        response = engine.ask(request.question, top_k=request.top_k)
+        response = engine.ask(request.question, top_k=request.top_k, llm_mode=request.llm_mode)
         return {
             "answer": response.answer,
             "sources": response.sources,
@@ -149,7 +151,7 @@ async def explain(request: ExplainRequest):
     """Get a detailed explanation of a specific class."""
     try:
         engine = _get_rag_engine()
-        response = engine.explain_class(request.class_name)
+        response = engine.explain_class(request.class_name, llm_mode=request.llm_mode)
         return {
             "explanation": response.answer,
             "sources": response.sources,
@@ -167,8 +169,9 @@ async def health():
     return {
         "status": "ok",
         "vectors": engine.vector_store.count(),
-        "model": engine.llm.model_name,
-        "llm_ready": engine.llm.ping(),
+        "model": engine.default_llm.model_name,
+        "mode": engine.default_llm.mode,
+        "llm_ready": engine.default_llm.ping(),
     }
 
 
@@ -188,7 +191,7 @@ async def serve_ui():
 
 if __name__ == "__main__":
     import uvicorn
-    print(f"\n  🚀 Starting DriveStream RAG Web UI on http://localhost:{config.WEB_PORT}\n")
+    print(f"\n  Starting DriveStream RAG Web UI on http://localhost:{config.WEB_PORT}\n")
     uvicorn.run(
         "web.app:app",
         host=config.WEB_HOST,

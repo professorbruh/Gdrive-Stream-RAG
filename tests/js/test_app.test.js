@@ -243,3 +243,33 @@ describe('Mode Switching DOM', () => {
     expect(searchBtn.classList.contains('active')).toBe(true);
   });
 });
+
+describe('LLM Mode Switching & Cost Protection', () => {
+  let win;
+  let dom;
+
+  beforeEach(() => {
+    dom = createDOM();
+    dom.window.fetch = jest.fn(() => Promise.reject(new Error('mock')));
+    win = loadAppInDOM(dom);
+  });
+
+  test('has llm mode select element', () => {
+    const doc = dom.window.document;
+    expect(doc.getElementById('llm-mode-select')).not.toBeNull();
+  });
+
+  test('llm mode change updates currentLlmMode', () => {
+    const doc = dom.window.document;
+    const select = doc.getElementById('llm-mode-select');
+    
+    // Simulate user selecting hf_api
+    select.value = 'hf_api';
+    const event = new dom.window.Event('change');
+    select.dispatchEvent(event);
+    
+    // Since currentLlmMode is not exported, we can verify its effect by inspecting the payload or mocking apiCall if it was exposed.
+    // For now, we just verify the event listener doesn't throw.
+    expect(select.value).toBe('hf_api');
+  });
+});

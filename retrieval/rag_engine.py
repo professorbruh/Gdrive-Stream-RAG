@@ -43,10 +43,23 @@ class RAGEngine:
         self.embedder = Embedder()
         self.vector_store = VectorStore()
         self.retriever = Retriever(embedder=self.embedder, vector_store=self.vector_store)
-        self.llm = llm or HuggingFaceModel()
+        self.default_llm = llm or HuggingFaceModel()
+        self._llms = {self.default_llm.mode: self.default_llm}
         print(f"  ✓ RAG Engine ready — {self.vector_store.count()} vectors in store")
 
-    def ask(self, question: str, top_k: int = RETRIEVAL_TOP_K) -> RAGResponse:
+    def _get_llm(self, mode: str = None) -> HuggingFaceModel:
+        if not mode:
+            return self.default_llm
+        if mode not in self._llms:
+            # Initialize lightweight wrappers on demand
+            if mode in ["remote", "hf_api"]:
+                self._llms[mode] = HuggingFaceModel(mode=mode)
+            else:
+                # Fallback to default if 'local' is requested but not default
+                return self.default_llm
+        return self._llms[mode]
+
+    def ask(self, question: str, top_k: int = RETRIEVAL_TOP_K, llm_mode: str = None) -> RAGResponse:
         """
         Answers a question about the DriveStream codebase using RAG.
 
@@ -58,19 +71,21 @@ class RAGEngine:
         # Retrieve relevant chunks
         chunks = self.retriever.search(question, top_k=top_k)
 
+        llm = self._get_llm(llm_mode)
+
         if not chunks:
             return RAGResponse(
                 answer="I couldn't find any relevant code in the DriveStream codebase for your question.",
                 sources=[],
                 chunks_used=0,
-                model_name=self.llm.model_name,
+                model_name=llm.model_name,
             )
 
         # Build prompt with context
         prompt = build_context(question, chunks)
 
         # Generate answer
-        answer = self.llm.generate(prompt)
+        answer = llm.generate(prompt)
 
         # Format source citations
         sources = format_sources_for_response(chunks)
@@ -79,7 +94,7 @@ class RAGEngine:
             answer=answer,
             sources=sources,
             chunks_used=len(chunks),
-            model_name=self.llm.model_name,
+            model_name=llm.model_name,
         )
 
     def search_code(self, query: str, top_k: int = 5) -> list[dict]:
@@ -101,7 +116,7 @@ class RAGEngine:
             })
         return results
 
-    def explain_class(self, class_name: str) -> RAGResponse:
+    def explain_class(self, class_name: str, llm_mode: str = None) -> RAGResponse:
         """
         Provides a detailed explanation of a specific class.
         Retrieves all chunks for the class and generates a comprehensive explanation.
@@ -114,21 +129,23 @@ class RAGEngine:
                 top_k=8,
             )
 
+        llm = self._get_llm(llm_mode)
+
         if not chunks:
             return RAGResponse(
                 answer=f"I couldn't find a class named '{class_name}' in the DriveStream codebase.",
                 sources=[],
                 chunks_used=0,
-                model_name=self.llm.model_name,
+                model_name=llm.model_name,
             )
 
         prompt = build_context_for_class_explanation(class_name, chunks)
-        answer = self.llm.generate(prompt)
+        answer = llm.generate(prompt)
         sources = format_sources_for_response(chunks)
 
         return RAGResponse(
             answer=answer,
             sources=sources,
             chunks_used=len(chunks),
-            model_name=self.llm.model_name,
+            model_name=llm.model_name,
         )
