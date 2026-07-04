@@ -1,5 +1,5 @@
 #!/bin/bash
-# Deployment script executed on the GCP Compute Engine instance by GitHub Actions
+# Deployment script executed on the Oracle Cloud instance by GitHub Actions
 
 set -e
 
@@ -28,7 +28,22 @@ echo "Installing dependencies..."
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# 5. Restart the systemd service
+# 5. Setup Caddy (Reverse Proxy) if not installed
+if ! command -v caddy &> /dev/null; then
+    echo "Installing Caddy..."
+    sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https curl
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+    sudo apt update
+    sudo apt install caddy -y
+fi
+
+# 6. Apply Caddy configuration
+echo "Applying Caddy configuration for domain: $APP_DOMAIN"
+sed "s/YOUR_DOMAIN_PLACEHOLDER/$APP_DOMAIN/g" Caddyfile | sudo tee /etc/caddy/Caddyfile > /dev/null
+sudo systemctl reload caddy
+
+# 7. Restart the systemd service
 echo "Restarting the rag-mcp systemd service..."
 sudo systemctl restart rag-mcp
 

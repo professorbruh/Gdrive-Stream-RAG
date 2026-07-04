@@ -30,9 +30,10 @@ EMBEDDING_DIMENSION = 384
 LLM_MODEL_NAME = os.getenv(
     "LLM_MODEL", "Qwen/Qwen2.5-Coder-3B-Instruct"
 )
-# Modes: "local" (GPU), "remote" (AWS -> Local), "hf_api" (HuggingFace Cloud)
+# Modes: "local" (GPU), "remote" (Oracle -> Local via Cloudflare), "hf_api" (HuggingFace Cloud)
 LLM_MODE = os.getenv("LLM_MODE", "local").lower()
 LLM_REMOTE_URL = os.getenv("LLM_REMOTE_URL", "http://localhost:8080/generate")
+LLM_API_KEY = os.getenv("LLM_API_KEY", "")
 HF_TOKEN = os.getenv("HF_TOKEN", None)
 
 # Quantization: 4-bit for local GPU inference (fits in ~6GB VRAM)

@@ -159,16 +159,19 @@ class HuggingFaceModel:
             "prompt": prompt,
             "max_new_tokens": max_new_tokens,
         }
+        headers = {}
+        if config.LLM_API_KEY:
+            headers["Authorization"] = f"Bearer {config.LLM_API_KEY}"
         
         try:
-            response = requests.post(config.LLM_REMOTE_URL, json=payload, timeout=60)
+            response = requests.post(config.LLM_REMOTE_URL, json=payload, headers=headers, timeout=60)
             response.raise_for_status()
             return response.json().get("text", "")
         except Exception as e:
             print(f"Error calling remote LLM server at {config.LLM_REMOTE_URL}: {e}")
             return (
-                f"🤖 **Uh oh!** The server tried to the GPU at `{config.LLM_REMOTE_URL}`, "
+                f"🤖 **Uh oh!** The Oracle Cloud server tried to call your local RTX 5070 at `{config.LLM_REMOTE_URL}`, "
                 f"but it didn't pick up the phone! 📱💥\n\n"
-                f"Perhaps admin is playing video games instead of running the LLM? "
+                f"Did you turn off your PC, close the Ngrok tunnel, or are you just playing video games instead of hosting the LLM? "
                 f"Admin pls!"
             )
