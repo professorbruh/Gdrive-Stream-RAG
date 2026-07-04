@@ -17,20 +17,32 @@ cd "$APP_DIR"
 echo "Pulling latest code from master branch..."
 git pull origin master
 
-# 3. Setup virtual environment if it doesn't exist
+# 3. Generate .env file from CI/CD secrets
+echo "Generating .env file from CI/CD secrets..."
+cat <<EOF > .env
+HF_TOKEN=$HF_TOKEN
+LLM_MODE=$LLM_MODE
+LLM_REMOTE_URL=$LLM_REMOTE_URL
+LLM_API_KEY=$LLM_API_KEY
+OCI_APM_ENDPOINT=$OCI_APM_ENDPOINT
+OCI_APM_DATA_KEY=$OCI_APM_DATA_KEY
+EOF
+chmod 600 .env
+
+# 4. Setup virtual environment if it doesn't exist
 if [ ! -d ".venv" ]; then
     echo "Creating virtual environment..."
     python3 -m venv .venv
 fi
 
-# 4. Install dependencies
+# 5. Install dependencies
 echo "Installing dependencies..."
 source .venv/bin/activate
 # Pre-install CPU-only PyTorch so it doesn't download 4GB of NVIDIA CUDA libraries on the cloud
 pip install torch --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements.txt
 
-# 5. Setup Caddy (Reverse Proxy) if not installed
+# 6. Setup Caddy (Reverse Proxy) if not installed
 if ! command -v caddy &> /dev/null; then
     echo "Installing Caddy..."
     sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https curl
@@ -40,17 +52,17 @@ if ! command -v caddy &> /dev/null; then
     sudo apt install caddy -y
 fi
 
-# 6. Apply Caddy configuration
+# 7. Apply Caddy configuration
 echo "Applying Caddy configuration for domain: $APP_DOMAIN"
 sed "s/YOUR_DOMAIN_PLACEHOLDER/$APP_DOMAIN/g" Caddyfile | sudo tee /etc/caddy/Caddyfile > /dev/null
 sudo systemctl reload caddy
 
-# 7. Apply Systemd Configuration
+# 8. Apply Systemd Configuration
 echo "Applying systemd configuration..."
 sed "s/youruser/ubuntu/g" scripts/rag-mcp.service | sudo tee /etc/systemd/system/rag-mcp.service > /dev/null
 sudo systemctl daemon-reload
 
-# 8. Restart the systemd service
+# 9. Restart the systemd service
 echo "Restarting the rag-mcp systemd service..."
 sudo systemctl restart rag-mcp
 

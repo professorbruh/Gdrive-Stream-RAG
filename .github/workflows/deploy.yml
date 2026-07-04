@@ -53,14 +53,26 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         env:
           APP_DOMAIN: ${{ secrets.APP_DOMAIN }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          LLM_MODE: ${{ secrets.LLM_MODE }}
+          LLM_REMOTE_URL: ${{ secrets.LLM_REMOTE_URL }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          OCI_APM_ENDPOINT: ${{ secrets.OCI_APM_ENDPOINT }}
+          OCI_APM_DATA_KEY: ${{ secrets.OCI_APM_DATA_KEY }}
         with:
           host: ${{ secrets.OCI_HOST_IP }}
           username: ${{ secrets.OCI_USERNAME }}
           key: ${{ secrets.OCI_SSH_KEY }}
-          envs: APP_DOMAIN
+          envs: APP_DOMAIN,HF_TOKEN,LLM_MODE,LLM_REMOTE_URL,LLM_API_KEY,OCI_APM_ENDPOINT,OCI_APM_DATA_KEY
           script: |
-            # Export the domain for the deployment script
+            # Export the variables for the deployment script
             export APP_DOMAIN=$APP_DOMAIN
+            export HF_TOKEN=$HF_TOKEN
+            export LLM_MODE=$LLM_MODE
+            export LLM_REMOTE_URL=$LLM_REMOTE_URL
+            export LLM_API_KEY=$LLM_API_KEY
+            export OCI_APM_ENDPOINT=$OCI_APM_ENDPOINT
+            export OCI_APM_DATA_KEY=$OCI_APM_DATA_KEY
             
             # Run the deployment script on the Oracle VM
             bash ~/Gdrive-Stream-RAG/scripts/deploy.sh
