@@ -296,20 +296,35 @@ body {
 }
 
 .github-link {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 6px;
-    margin-top: 10px;
-    font-size: 11px;
-    color: var(--text-tertiary);
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #ffffff;
+    background: #111111;
+    border: 1px solid #333333;
+    border-radius: 6px;
     text-decoration: none;
-    opacity: 0.5;
-    transition: opacity var(--transition-normal), color var(--transition-normal);
+    transition: background 0.2s, border-color 0.2s, transform 0.1s;
+    width: 100%;
+}
+
+.github-link svg {
+    color: #ffffff;
 }
 
 .github-link:hover {
-    opacity: 1;
-    color: var(--text-secondary);
+    background: #000000;
+    border-color: #666666;
+    transform: translateY(-1px);
+}
+
+.github-link:active {
+    transform: translateY(0);
 }
 
 /* ── Main Content ───────────────────────────────────────────── */
