@@ -13,7 +13,10 @@ def mock_rag_engine(mock_llm):
     engine = MagicMock()
     engine.vector_store = MagicMock()
     engine.vector_store.count.return_value = 42
-    engine.llm = mock_llm
+    engine.default_llm = mock_llm
+    engine.default_llm.model_name = "test-model/mock-7b"
+    engine.default_llm.mode = "hf_api"
+    engine.default_llm.ping.return_value = True
 
     # Mock ask()
     engine.ask.return_value = RAGResponse(
@@ -62,6 +65,7 @@ class TestHealthEndpoint:
         assert "status" in data
         assert "vectors" in data
         assert "model" in data
+        assert "mode" in data
         assert "llm_ready" in data
 
     def test_health_status_is_ok(self, client):
@@ -117,7 +121,7 @@ class TestAskEndpoint:
 
     def test_ask_custom_top_k(self, client, mock_rag_engine):
         client.post("/api/ask", json={"question": "test", "top_k": 3})
-        mock_rag_engine.ask.assert_called_once_with("test", top_k=3)
+        mock_rag_engine.ask.assert_called_once_with("test", top_k=3, llm_mode=None)
 
 
 class TestSearchEndpoint:
