@@ -11,13 +11,13 @@ jobs:
     steps:
       - name: Deploy to VM via SSH
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          APP_DOMAIN: ${{ secrets.APP_DOMAIN }}
         with:
           host: ${{ secrets.OCI_HOST_IP }}
           username: ${{ secrets.OCI_USERNAME }}
           key: ${{ secrets.OCI_SSH_KEY }}
           envs: APP_DOMAIN
-          env:
-            APP_DOMAIN: ${{ secrets.APP_DOMAIN }}
           script: |
             # Export the domain for the deployment script
             export APP_DOMAIN=$APP_DOMAIN
