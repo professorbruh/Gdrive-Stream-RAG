@@ -295,6 +295,23 @@ body {
     background: #e74c3c;
 }
 
+.github-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    text-decoration: none;
+    opacity: 0.5;
+    transition: opacity var(--transition-normal), color var(--transition-normal);
+}
+
+.github-link:hover {
+    opacity: 1;
+    color: var(--text-secondary);
+}
+
 /* ── Main Content ───────────────────────────────────────────── */
 .main {
     flex: 1;

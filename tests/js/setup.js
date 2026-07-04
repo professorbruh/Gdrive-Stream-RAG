@@ -3,6 +3,10 @@
  * so that app.js can find DOM elements during testing.
  */
 
+const { TextEncoder, TextDecoder } = require('util');
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
+
 const { JSDOM } = require('jsdom');
 
 const html = `
@@ -63,6 +67,7 @@ function createDOM() {
   const dom = new JSDOM(html, {
     url: 'http://localhost:8000',
     pretendToBeVisual: true,
+    runScripts: 'dangerously',
   });
   return dom;
 }

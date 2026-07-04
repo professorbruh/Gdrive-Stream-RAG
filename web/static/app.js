@@ -411,3 +411,9 @@ function toggleSidebar() {
         backdrop.remove();
     }
 }
+
+// Export for testing
+if (typeof window !== 'undefined') {
+    window.escapeHtml = escapeHtml;
+    window.formatMarkdown = formatMarkdown;
+}
