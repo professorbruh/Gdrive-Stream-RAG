@@ -183,7 +183,12 @@ class HuggingFaceModel:
         import requests
         try:
             health_url = self.remote_url.replace("/generate", "/health")
-            resp = requests.get(health_url, timeout=3)
+            resp = requests.get(
+                health_url, 
+                timeout=10, 
+                headers={"ngrok-skip-browser-warning": "true"}
+            )
             return resp.status_code == 200
-        except Exception:
+        except Exception as e:
+            print(f"Health check failed: {e}")
             return False
