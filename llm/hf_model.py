@@ -182,7 +182,7 @@ class HuggingFaceModel:
             
         import requests
         try:
-            health_url = self.remote_url.replace("/generate", "/health")
+            health_url = config.LLM_REMOTE_URL.replace("/generate", "/health")
             resp = requests.get(
                 health_url, 
                 timeout=10, 
