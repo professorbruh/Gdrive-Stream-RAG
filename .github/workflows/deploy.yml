@@ -1,4 +1,4 @@
-name: Deploy to Oracle Cloud
+name: Test & Deploy to Oracle Cloud
 
 on:
   push:
@@ -6,7 +6,43 @@ on:
       - master
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ── Python Tests ──────────────────────────────────
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt
+          pip install -r requirements-test.txt
+
+      - name: Run Python tests
+        run: pytest tests/ -v --tb=short
+
+      # ── JavaScript Tests ──────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install JS dependencies
+        working-directory: tests/js
+        run: npm install
+
+      - name: Run JS tests
+        working-directory: tests/js
+        run: npm test
+
   deploy:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to VM via SSH

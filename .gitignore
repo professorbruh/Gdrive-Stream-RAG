@@ -14,6 +14,13 @@ venv/
 # Data (regeneratable)
 data/chroma_db/
 
+# Testing
+.pytest_cache/
+pytest-cache-files-*/
+htmlcov/
+.coverage
+node_modules/
+
 # IDE
 .idea/
 .vscode/
