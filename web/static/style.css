@@ -86,8 +86,8 @@ body {
 /* ── App Layout ─────────────────────────────────────────────── */
 #app {
     display: flex;
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
     overflow: hidden;
 }
 
@@ -800,6 +800,38 @@ body {
 
     .header-badge {
         display: none;
+    }
+
+    .main-header {
+        padding: 0 16px;
+    }
+
+    .message {
+        gap: 10px;
+    }
+
+    .message-avatar {
+        width: 30px;
+        height: 30px;
+        font-size: 15px;
+    }
+
+    .message-text {
+        padding: 12px 14px;
+        font-size: 14px;
+    }
+
+    .welcome-message .message-text h2 {
+        font-size: 18px;
+    }
+
+    .input-wrapper {
+        padding: 8px 8px 8px 14px;
+    }
+
+    #user-input {
+        font-size: 14px;
+        max-height: 100px; /* Leave room for mobile keyboard */
     }
 }
 
