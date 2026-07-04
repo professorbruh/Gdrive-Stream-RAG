@@ -24,7 +24,7 @@ graph TD
     I -->|Qwen2.5-Coder-3B| H
 ```
 
-### Components 
+### Components  
 1. **Ingestion (`ingestion/`)**: Parses Java files into meaningful AST chunks (classes, methods) using regex. Generates embeddings using `sentence-transformers/all-MiniLM-L6-v2` and stores them in ChromaDB.
 2. **Retrieval (`retrieval/`)**: Performs cosine similarity search against ChromaDB to assemble relevant context for queries.
 3. **Generation (`llm/`)**: Uses `Qwen/Qwen2.5-Coder-3B-Instruct` locally in FP16 for rapid, high-quality code generation. Fits comfortably in 12GB VRAM.
