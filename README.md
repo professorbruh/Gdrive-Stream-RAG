@@ -29,7 +29,7 @@ graph TD
 2. **Retrieval (`retrieval/`)**: Performs cosine similarity search against ChromaDB to assemble relevant context for queries.
 3. **Generation (`llm/`)**: Uses `Qwen/Qwen2.5-Coder-3B-Instruct` locally in FP16 for rapid, high-quality code generation. Fits comfortably in 12GB VRAM.
 4. **Interfaces**:
-   - **Web UI (`web/`)**: A premium dark-mode chat interface built with FastAPI.
+   - **Web UI (`web/`)**: A premium dark-mode chat interface built with FastAPI. 🌍 **[Try the Live Demo!](https://drivestream-rag.duckdns.org/)** Automatically deployed via GitHub Actions to an Oracle Cloud VM, monitored by OCI APM OpenTelemetry.
    - **MCP Server (`mcp_server/`)**: Exposes the codebase tools (`ask_codebase`, `search_code`, `explain_class`) to external AI assistants via the Model Context Protocol.
 
 ---
