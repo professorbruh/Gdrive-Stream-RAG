@@ -6,13 +6,12 @@ on:
       - master
 
 jobs:
-  test:
+  test-python:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # ── Python Tests ──────────────────────────────────
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -27,7 +26,12 @@ jobs:
       - name: Run Python tests
         run: pytest tests/ -v --tb=short
 
-      # ── JavaScript Tests ──────────────────────────────
+  test-js:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -42,7 +46,7 @@ jobs:
         run: npm test
 
   deploy:
-    needs: test
+    needs: [test-python, test-js]
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to VM via SSH
