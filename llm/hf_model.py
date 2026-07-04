@@ -10,6 +10,9 @@ API mode:    Calls the HuggingFace Inference API (free tier available).
 """
 
 import config
+from logger_setup import get_logger
+
+logger = get_logger(__name__)
 
 
 class HuggingFaceModel:
@@ -45,8 +48,8 @@ class HuggingFaceModel:
             BitsAndBytesConfig,
         )
 
-        print(f"  Loading local model: {self.model_name}")
-        print(f"  4-bit quantization: {config.LLM_LOAD_IN_4BIT}")
+        logger.info(f"Loading local model: {self.model_name}")
+        logger.info(f"4-bit quantization: {config.LLM_LOAD_IN_4BIT}")
 
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.model_name,
@@ -76,24 +79,24 @@ class HuggingFaceModel:
             **load_kwargs,
         )
 
-        print(f"  ✓ Model loaded on {self.model.device}")
+        logger.info(f"Model loaded on {self.model.device}")
         self._generate = self._generate_local
 
     def _init_api(self):
         """Initializes the HuggingFace Inference API client."""
         from huggingface_hub import InferenceClient
 
-        print(f"  Using HF Inference API: {self.model_name}")
+        logger.info(f"Using HF Inference API: {self.model_name}")
         self.client = InferenceClient(
             model=self.model_name,
             token=self.hf_token,
         )
-        print(f"  Initialized HuggingFace API client")
+        logger.info("Initialized HuggingFace API client")
         self._generate = self._generate_api
 
     def _init_remote(self):
         """Initializes the model in remote client mode."""
-        print(f"  Initialized Remote LLM client -> {config.LLM_REMOTE_URL}")
+        logger.info(f"Initialized Remote LLM client -> {config.LLM_REMOTE_URL}")
         self._generate = self._generate_remote
 
     def generate(self, prompt: str, max_new_tokens: int = None) -> str:
@@ -177,7 +180,7 @@ class HuggingFaceModel:
             response.raise_for_status()
             return response.json().get("text", "")
         except Exception as e:
-            print(f"Error calling remote LLM server at {config.LLM_REMOTE_URL}: {e}")
+            logger.error(f"Error calling remote LLM server at {config.LLM_REMOTE_URL}: {e}")
             return (
                 f"🤖 **Uh oh!** The Oracle Cloud server tried to call your local GPU, "
                 f"but it didn't pick up the phone! 📱💥\n\n"

@@ -10,6 +10,9 @@ import uvicorn
 
 import config
 from llm.hf_model import HuggingFaceModel
+from logger_setup import get_logger
+
+logger = get_logger(__name__)
 
 app = FastAPI(title="DriveStream Local GPU Server")
 api_key_header = APIKeyHeader(name="Authorization", auto_error=False)
@@ -21,9 +24,9 @@ def verify_api_key(api_key: str = Security(api_key_header)):
     return api_key
 
 # Initialize the model forcibly in local mode
-print("Initializing LLM Server on Local GPU...")
+logger.info("Initializing LLM Server on Local GPU...")
 llm = HuggingFaceModel(mode="local")
-print("LLM Server is ready!")
+logger.info("LLM Server is ready!")
 
 
 class GenerateRequest(BaseModel):
@@ -37,6 +40,7 @@ def generate_text(req: GenerateRequest, api_key: str = Depends(verify_api_key)):
         text = llm.generate(req.prompt, req.max_new_tokens)
         return {"text": text}
     except Exception as e:
+        logger.error(f"Error generating text: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/health")

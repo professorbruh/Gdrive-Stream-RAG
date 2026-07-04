@@ -4,6 +4,9 @@ This is the central interface that the MCP server and web API call.
 """
 
 from dataclasses import dataclass, field
+from logger_setup import get_logger
+
+logger = get_logger(__name__)
 
 from ingestion.embedder import Embedder
 from retrieval.vector_store import VectorStore
@@ -39,13 +42,13 @@ class RAGEngine:
     """
 
     def __init__(self, llm: HuggingFaceModel = None):
-        print("Initializing RAG Engine...")
+        logger.info("Initializing RAG Engine...")
         self.embedder = Embedder()
         self.vector_store = VectorStore()
         self.retriever = Retriever(embedder=self.embedder, vector_store=self.vector_store)
         self.default_llm = llm or HuggingFaceModel()
         self._llms = {self.default_llm.mode: self.default_llm}
-        print(f"  ✓ RAG Engine ready — {self.vector_store.count()} vectors in store")
+        logger.info(f"RAG Engine ready — {self.vector_store.count()} vectors in store")
 
     def _get_llm(self, mode: str = None) -> HuggingFaceModel:
         if not mode:

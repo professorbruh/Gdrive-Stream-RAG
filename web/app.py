@@ -26,6 +26,9 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 import config
+from logger_setup import get_logger
+
+logger = get_logger(__name__)
 
 # ── Pydantic Models ──────────────────────────────────────────────────
 
@@ -100,11 +103,11 @@ if config.OCI_APM_ENDPOINT and config.OCI_APM_DATA_KEY:
         # 6. Gather System Metrics (RAM, CPU)
         SystemMetricsInstrumentor().instrument()
         
-        print(f"✓ OpenTelemetry configured for OCI APM (Traces & Metrics)")
+        logger.info("OpenTelemetry configured for OCI APM (Traces & Metrics)")
     except ImportError as e:
-        print(f"⚠️ OpenTelemetry dependencies missing, skipping APM config: {e}")
+        logger.warning(f"OpenTelemetry dependencies missing, skipping APM config: {e}")
     except Exception as e:
-        print(f"⚠️ OpenTelemetry configuration failed: {e}")
+        logger.error(f"OpenTelemetry configuration failed: {e}")
 
 # Lazy-loaded RAG engine
 _rag_engine = None
@@ -192,7 +195,7 @@ async def serve_ui():
 
 if __name__ == "__main__":
     import uvicorn
-    print(f"\n  Starting DriveStream RAG Web UI on http://localhost:{config.WEB_PORT}\n")
+    logger.info(f"Starting DriveStream RAG Web UI on http://localhost:{config.WEB_PORT}")
     uvicorn.run(
         "web.app:app",
         host=config.WEB_HOST,

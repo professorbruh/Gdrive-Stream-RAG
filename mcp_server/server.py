@@ -31,6 +31,9 @@ from mcp.server.stdio import stdio_server
 from mcp.types import Tool, TextContent
 
 import config
+from logger_setup import get_logger
+
+logger = get_logger(__name__)
 
 # ── Initialize MCP Server ────────────────────────────────────────────
 
@@ -178,7 +181,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
 
 async def run_stdio():
     """Runs the MCP server with stdio transport."""
-    print(f"Starting MCP server '{config.MCP_SERVER_NAME}' (stdio transport)...", file=sys.stderr)
+    logger.info(f"Starting MCP server '{config.MCP_SERVER_NAME}' (stdio transport)...")
     async with stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream,
@@ -211,7 +214,7 @@ async def run_sse():
         Route("/messages/", endpoint=sse.handle_post_message, methods=["POST"]),
     ])
 
-    print(f"Starting MCP server '{config.MCP_SERVER_NAME}' (SSE on port {config.MCP_SSE_PORT})...", file=sys.stderr)
+    logger.info(f"Starting MCP server '{config.MCP_SERVER_NAME}' (SSE on port {config.MCP_SSE_PORT})...")
     uv_config = uvicorn.Config(app, host="0.0.0.0", port=config.MCP_SSE_PORT)
     uv_server = uvicorn.Server(uv_config)
     await uv_server.serve()

@@ -12,6 +12,9 @@ Usage:
 import sys
 import os
 import argparse
+from logger_setup import get_logger
+
+logger = get_logger(__name__)
 
 # Force UTF-8 output on Windows to avoid cp1252 encoding errors
 if sys.platform == "win32":
@@ -54,7 +57,7 @@ def cmd_ingest():
 def cmd_web():
     import uvicorn
     import config
-    print(f"\n  🚀 Starting DriveStream RAG Web UI on http://localhost:{config.WEB_PORT}\n")
+    logger.info(f"Starting DriveStream RAG Web UI on http://localhost:{config.WEB_PORT}")
     uvicorn.run(
         "web.app:app",
         host=config.WEB_HOST,
@@ -79,7 +82,7 @@ def cmd_llm_server(args):
     """Starts the standalone Local GPU LLM server (for remote mode)."""
     import uvicorn
     from llm.server import app
-    print("\n  🚀 Starting DriveStream Local GPU Server on http://localhost:8080\n")
+    logger.info("Starting DriveStream Local GPU Server on http://localhost:8080")
     uvicorn.run(app, host="0.0.0.0", port=8080)
 
 
