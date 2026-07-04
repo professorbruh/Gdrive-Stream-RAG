@@ -163,15 +163,16 @@ async def explain(request: ExplainRequest):
 
 
 @app.get("/api/health")
-async def health():
+async def health(llm_mode: str = None):
     """Health check endpoint."""
     engine = _get_rag_engine()
+    llm = engine._get_llm(llm_mode) if llm_mode else engine.default_llm
     return {
         "status": "ok",
         "vectors": engine.vector_store.count(),
-        "model": engine.default_llm.model_name,
-        "mode": engine.default_llm.mode,
-        "llm_ready": engine.default_llm.ping(),
+        "model": llm.model_name,
+        "mode": llm.mode,
+        "llm_ready": llm.ping(),
     }
 
 

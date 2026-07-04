@@ -69,6 +69,7 @@ function setupEventListeners() {
     if (llmModeSelect) {
         llmModeSelect.addEventListener('change', (e) => {
             currentLlmMode = e.target.value;
+            checkHealth();
         });
     }
 }
@@ -187,7 +188,11 @@ async function apiCall(endpoint, body) {
 
 async function checkHealth() {
     try {
-        const res = await fetch(`${API_BASE}/api/health`);
+        let url = `${API_BASE}/api/health`;
+        if (currentLlmMode) {
+            url += `?llm_mode=${currentLlmMode}`;
+        }
+        const res = await fetch(url);
         const data = await res.json();
 
         if (data.llm_ready) {
