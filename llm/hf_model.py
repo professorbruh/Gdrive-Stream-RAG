@@ -170,7 +170,7 @@ class HuggingFaceModel:
         except Exception as e:
             print(f"Error calling remote LLM server at {config.LLM_REMOTE_URL}: {e}")
             return (
-                f"🤖 **Uh oh!** The Oracle Cloud server tried to call your local GPU at `{config.LLM_REMOTE_URL}`, "
+                f"🤖 **Uh oh!** The Oracle Cloud server tried to call your local GPU, "
                 f"but it didn't pick up the phone! 📱💥\n\n"
                 f"Did you turn off your PC, close the Ngrok tunnel, or are you just playing video games instead of hosting the LLM? "
                 f"Admin pls!"
