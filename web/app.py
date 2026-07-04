@@ -52,40 +52,55 @@ app = FastAPI(
 # ── OpenTelemetry (OCI APM) ──────────────────────────────────────────
 if config.OCI_APM_ENDPOINT and config.OCI_APM_DATA_KEY:
     try:
-        from opentelemetry import trace
+        from opentelemetry import trace, metrics
         from opentelemetry.sdk.trace import TracerProvider
         from opentelemetry.sdk.trace.export import BatchSpanProcessor
+        from opentelemetry.sdk.metrics import MeterProvider
+        from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
         from opentelemetry.sdk.resources import Resource, SERVICE_NAME
         from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+        from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
         from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
         from opentelemetry.instrumentation.system_metrics import SystemMetricsInstrumentor
 
         # 1. Set the service name
         resource = Resource(attributes={SERVICE_NAME: "drivestream-rag-web"})
         
+        # Determine endpoints correctly
+        trace_endpoint = config.OCI_APM_ENDPOINT
+        metric_endpoint = config.OCI_APM_ENDPOINT.replace("/v1/traces", "/v1/metrics")
+        if not metric_endpoint.endswith("/v1/metrics"):
+            # Fallback if they provided the base URL
+            trace_endpoint = config.OCI_APM_ENDPOINT.rstrip("/") + "/v1/traces"
+            metric_endpoint = config.OCI_APM_ENDPOINT.rstrip("/") + "/v1/metrics"
+
+        headers = {"Authorization": f"dataKey {config.OCI_APM_DATA_KEY}"}
+
         # 2. Configure the Tracer Provider
-        provider = TracerProvider(resource=resource)
-        trace.set_tracer_provider(provider)
+        tracer_provider = TracerProvider(resource=resource)
+        trace.set_tracer_provider(tracer_provider)
         
-        # 3. Configure the OTLP HTTP Exporter
-        otlp_exporter = OTLPSpanExporter(
-            endpoint=config.OCI_APM_ENDPOINT,
-            headers={"authorization": f"dataKey {config.OCI_APM_DATA_KEY}"}
-        )
+        # 3. Configure the OTLP HTTP Trace Exporter
+        span_exporter = OTLPSpanExporter(endpoint=trace_endpoint, headers=headers)
+        tracer_provider.add_span_processor(BatchSpanProcessor(span_exporter))
         
-        # 4. Add the exporter to the provider
-        processor = BatchSpanProcessor(otlp_exporter)
-        provider.add_span_processor(processor)
-        
+        # 4. Configure the Meter Provider for Metrics
+        metric_exporter = OTLPMetricExporter(endpoint=metric_endpoint, headers=headers)
+        metric_reader = PeriodicExportingMetricReader(metric_exporter, export_interval_millis=15000)
+        meter_provider = MeterProvider(resource=resource, metric_readers=[metric_reader])
+        metrics.set_meter_provider(meter_provider)
+
         # 5. Auto-instrument FastAPI routes
-        FastAPIInstrumentor.instrument_app(app)
+        FastAPIInstrumentor().instrument_app(app)
 
         # 6. Gather System Metrics (RAM, CPU)
         SystemMetricsInstrumentor().instrument()
         
-        print("✓ OpenTelemetry configured for OCI APM")
+        print(f"✓ OpenTelemetry configured for OCI APM (Traces & Metrics)")
     except ImportError as e:
         print(f"⚠️ OpenTelemetry dependencies missing, skipping APM config: {e}")
+    except Exception as e:
+        print(f"⚠️ OpenTelemetry configuration failed: {e}")
 
 # Lazy-loaded RAG engine
 _rag_engine = None
