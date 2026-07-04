@@ -29,6 +29,7 @@ const sidebar = document.getElementById('sidebar');
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     checkHealth();
+    setInterval(checkHealth, 10000); // Poll every 10 seconds
     autoResizeTextarea();
 });
 
@@ -158,15 +159,22 @@ async function checkHealth() {
         const res = await fetch(`${API_BASE}/api/health`);
         const data = await res.json();
 
-        healthDot.classList.add('online');
-        healthDot.classList.remove('error');
-        healthText.textContent = `Online · ${data.vectors} vectors`;
-        modelBadge.textContent = data.model.split('/').pop();
-        vectorCount.textContent = data.vectors;
+        if (data.llm_ready) {
+            healthDot.classList.add('online');
+            healthDot.classList.remove('error');
+            healthText.textContent = `GPU Online · ${data.vectors} vectors`;
+            modelBadge.textContent = data.model.split('/').pop();
+            vectorCount.textContent = data.vectors;
+        } else {
+            healthDot.classList.add('error');
+            healthDot.classList.remove('online');
+            healthText.textContent = 'Admin is Busy at work or Gaming';
+            modelBadge.textContent = 'GPU Offline';
+        }
     } catch {
         healthDot.classList.add('error');
         healthDot.classList.remove('online');
-        healthText.textContent = 'Offline';
+        healthText.textContent = 'API Offline';
         modelBadge.textContent = 'Disconnected';
     }
 }

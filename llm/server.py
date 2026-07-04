@@ -39,6 +39,9 @@ def generate_text(req: GenerateRequest, api_key: str = Depends(verify_api_key)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "message": "Admin is grinding"}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8080)

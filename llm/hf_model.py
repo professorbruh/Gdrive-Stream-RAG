@@ -175,3 +175,15 @@ class HuggingFaceModel:
                 f"Did you turn off your PC, close the Ngrok tunnel, or are you just playing video games instead of hosting the LLM? "
                 f"Admin pls!"
             )
+    def ping(self) -> bool:
+        """Checks if the LLM backend is responsive."""
+        if self.mode == "local" or self.mode == "hf_api":
+            return True
+            
+        import requests
+        try:
+            health_url = self.remote_url.replace("/generate", "/health")
+            resp = requests.get(health_url, timeout=3)
+            return resp.status_code == 200
+        except Exception:
+            return False

@@ -113,6 +113,7 @@ async def health():
         "status": "ok",
         "vectors": engine.vector_store.count(),
         "model": engine.llm.model_name,
+        "llm_ready": engine.llm.ping(),
     }
 
 
