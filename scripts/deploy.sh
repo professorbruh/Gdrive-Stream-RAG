@@ -45,7 +45,12 @@ echo "Applying Caddy configuration for domain: $APP_DOMAIN"
 sed "s/YOUR_DOMAIN_PLACEHOLDER/$APP_DOMAIN/g" Caddyfile | sudo tee /etc/caddy/Caddyfile > /dev/null
 sudo systemctl reload caddy
 
-# 7. Restart the systemd service
+# 7. Apply Systemd Configuration
+echo "Applying systemd configuration..."
+sed "s/youruser/ubuntu/g" scripts/rag-mcp.service | sudo tee /etc/systemd/system/rag-mcp.service > /dev/null
+sudo systemctl daemon-reload
+
+# 8. Restart the systemd service
 echo "Restarting the rag-mcp systemd service..."
 sudo systemctl restart rag-mcp
 

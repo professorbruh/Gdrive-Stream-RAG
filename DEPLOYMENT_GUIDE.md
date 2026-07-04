@@ -104,17 +104,6 @@ You need to clone the repo on the VM so the deploy script knows where it is.
    ```
    *(Save and exit by pressing `Ctrl+X`, then `Y`, then `Enter`).*
 
-4. Install the systemd service:
-   ```bash
-   sudo cp scripts/rag-mcp.service /etc/systemd/system/
-   
-   # IMPORTANT: Open the file and replace 'youruser' with 'ubuntu'!
-   sudo nano /etc/systemd/system/rag-mcp.service
-   
-   sudo systemctl daemon-reload
-   sudo systemctl enable rag-mcp
-   ```
-
 ---
 
 ## Step 8: Trigger the Deployment!
