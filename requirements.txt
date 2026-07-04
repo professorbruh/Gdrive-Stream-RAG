@@ -1,3 +1,5 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
 # ── Embeddings & Vector Store ─────────────────────────
 sentence-transformers>=3.0.0
 chromadb>=0.5.0
