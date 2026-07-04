@@ -66,13 +66,15 @@ if config.OCI_APM_ENDPOINT and config.OCI_APM_DATA_KEY:
         # 1. Set the service name
         resource = Resource(attributes={SERVICE_NAME: "drivestream-rag-web"})
         
-        # Determine endpoints correctly
+        # Determine endpoints correctly for Oracle Cloud APM
+        base_url = config.OCI_APM_ENDPOINT.split("/20200101/")[0] if "/20200101/" in config.OCI_APM_ENDPOINT else config.OCI_APM_ENDPOINT.rstrip("/")
+        
         trace_endpoint = config.OCI_APM_ENDPOINT
-        metric_endpoint = config.OCI_APM_ENDPOINT.replace("/v1/traces", "/v1/metrics")
-        if not metric_endpoint.endswith("/v1/metrics"):
-            # Fallback if they provided the base URL
-            trace_endpoint = config.OCI_APM_ENDPOINT.rstrip("/") + "/v1/traces"
-            metric_endpoint = config.OCI_APM_ENDPOINT.rstrip("/") + "/v1/metrics"
+        if not trace_endpoint.endswith("/v1/traces") and "dataFormat=otlp" not in trace_endpoint:
+            trace_endpoint = f"{base_url}/20200101/opentelemetry/public/v1/traces"
+            
+        # OCI APM requires a very specific query parameter format for OTLP metrics
+        metric_endpoint = f"{base_url}/20200101/observations/metric?dataFormat=otlp-metric&dataFormatVersion=1"
 
         headers = {"Authorization": f"dataKey {config.OCI_APM_DATA_KEY}"}
 
