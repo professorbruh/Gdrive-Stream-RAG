@@ -185,11 +185,9 @@ class HuggingFaceModel:
             health_url = config.LLM_REMOTE_URL.replace("/generate", "/health")
             resp = requests.get(
                 health_url, 
-                timeout=10, 
+                timeout=5, 
                 headers={"ngrok-skip-browser-warning": "true"}
             )
-            if resp.status_code == 200:
-                return True
-            return f"Status {resp.status_code}: {resp.text}"
-        except Exception as e:
-            return f"Error: {e}"
+            return resp.status_code == 200
+        except Exception:
+            return False
