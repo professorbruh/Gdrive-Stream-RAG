@@ -39,7 +39,7 @@ graph TD
 ### 1. Prerequisites
 - **Python 3.11** or 3.12 (Do not use Python 3.13 if you want local PyTorch GPU support on Windows).
 - **HuggingFace Account** with an access token (for downloading models).
-- (Optional) **CUDA-enabled GPU** (e.g., RTX 5070) for fast local inference.
+- (Optional) **CUDA-enabled GPU** for fast local inference.
 
 ### 2. Environment Setup
 

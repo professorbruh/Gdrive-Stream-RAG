@@ -119,7 +119,7 @@ Once it's green, go to `https://your-domain.duckdns.org` in your browser. You wi
 
 ## Step 9: Start your Local GPU (The Brains)
 Because you set `LLM_MODE=remote` on the cloud, the Oracle Cloud server expects your local PC to generate the answers securely.
-1. On your local RTX 5070 PC, ensure you have the heavy GPU dependencies installed:
+1. On your local GPU PC, ensure you have the heavy GPU dependencies installed:
    ```bash
    pip install -r requirements-gpu.txt
    ```
@@ -135,4 +135,4 @@ Because you set `LLM_MODE=remote` on the cloud, the Oracle Cloud server expects 
    ```
 4. Take the HTTPS URL Ngrok gives you, SSH into your Oracle Cloud VM, and update the `LLM_REMOTE_URL` in your `.env` file to match it (then restart the service: `sudo systemctl restart rag-mcp`).
 
-**Congratulations! You now have a fully automated, HTTPS-secured Oracle Cloud Web App powered securely by your Local RTX 5070 GPU!**
+**Congratulations! You now have a fully automated, HTTPS-secured Oracle Cloud Web App powered securely by your Local GPU!**

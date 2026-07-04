@@ -3,7 +3,7 @@ HuggingFace LLM wrapper supporting both local inference (with 4-bit
 quantization for GPU) and the HuggingFace Inference API.
 
 Local mode:  Uses transformers + bitsandbytes for 4-bit quantized inference
-             on your RTX 5070 (12GB VRAM). Mistral-7B fits in ~6GB.
+             on your local GPU (12GB VRAM). Mistral-7B fits in ~6GB.
 
 API mode:    Calls the HuggingFace Inference API (free tier available).
              No GPU required, but rate-limited.
@@ -170,7 +170,7 @@ class HuggingFaceModel:
         except Exception as e:
             print(f"Error calling remote LLM server at {config.LLM_REMOTE_URL}: {e}")
             return (
-                f"🤖 **Uh oh!** The Oracle Cloud server tried to call your local RTX 5070 at `{config.LLM_REMOTE_URL}`, "
+                f"🤖 **Uh oh!** The Oracle Cloud server tried to call your local GPU at `{config.LLM_REMOTE_URL}`, "
                 f"but it didn't pick up the phone! 📱💥\n\n"
                 f"Did you turn off your PC, close the Ngrok tunnel, or are you just playing video games instead of hosting the LLM? "
                 f"Admin pls!"
