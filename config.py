@@ -62,3 +62,8 @@ WEB_PORT = int(os.getenv("WEB_PORT", "8000"))
 MCP_SERVER_NAME = "drivestream-rag"
 MCP_TRANSPORT = os.getenv("MCP_TRANSPORT", "stdio")  # "stdio" or "sse"
 MCP_SSE_PORT = int(os.getenv("MCP_SSE_PORT", "8001"))
+
+# ── Observability (OpenTelemetry) ────────────────────────────────────
+
+OCI_APM_ENDPOINT = os.getenv("OCI_APM_ENDPOINT", "")
+OCI_APM_DATA_KEY = os.getenv("OCI_APM_DATA_KEY", "")

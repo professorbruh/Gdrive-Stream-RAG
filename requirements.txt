@@ -16,6 +16,13 @@ mcp[cli]>=1.0.0
 fastapi>=0.112.0
 uvicorn[standard]>=0.30.0
 
+# OpenTelemetry (OCI APM)
+opentelemetry-api
+opentelemetry-sdk
+opentelemetry-instrumentation-fastapi
+opentelemetry-instrumentation-system-metrics
+opentelemetry-exporter-otlp
+
 # ── Utilities ────────────────────────────────────────
 pydantic>=2.8.0
 python-dotenv>=1.0.0

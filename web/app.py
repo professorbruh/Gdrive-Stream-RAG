@@ -49,6 +49,44 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# ── OpenTelemetry (OCI APM) ──────────────────────────────────────────
+if config.OCI_APM_ENDPOINT and config.OCI_APM_DATA_KEY:
+    try:
+        from opentelemetry import trace
+        from opentelemetry.sdk.trace import TracerProvider
+        from opentelemetry.sdk.trace.export import BatchSpanProcessor
+        from opentelemetry.sdk.resources import Resource, SERVICE_NAME
+        from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+        from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+        from opentelemetry.instrumentation.system_metrics import SystemMetricsInstrumentor
+
+        # 1. Set the service name
+        resource = Resource(attributes={SERVICE_NAME: "drivestream-rag-web"})
+        
+        # 2. Configure the Tracer Provider
+        provider = TracerProvider(resource=resource)
+        trace.set_tracer_provider(provider)
+        
+        # 3. Configure the OTLP HTTP Exporter
+        otlp_exporter = OTLPSpanExporter(
+            endpoint=config.OCI_APM_ENDPOINT,
+            headers={"authorization": f"dataKey {config.OCI_APM_DATA_KEY}"}
+        )
+        
+        # 4. Add the exporter to the provider
+        processor = BatchSpanProcessor(otlp_exporter)
+        provider.add_span_processor(processor)
+        
+        # 5. Auto-instrument FastAPI routes
+        FastAPIInstrumentor.instrument_app(app)
+
+        # 6. Gather System Metrics (RAM, CPU)
+        SystemMetricsInstrumentor().instrument()
+        
+        print("✓ OpenTelemetry configured for OCI APM")
+    except ImportError as e:
+        print(f"⚠️ OpenTelemetry dependencies missing, skipping APM config: {e}")
+
 # Lazy-loaded RAG engine
 _rag_engine = None
 

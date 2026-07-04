@@ -135,4 +135,22 @@ Because you set `LLM_MODE=remote` on the cloud, the Oracle Cloud server expects 
    ```
 4. Take the HTTPS URL Ngrok gives you, SSH into your Oracle Cloud VM, and update the `LLM_REMOTE_URL` in your `.env` file to match it (then restart the service: `sudo systemctl restart rag-mcp`).
 
-**Congratulations! You now have a fully automated, HTTPS-secured Oracle Cloud Web App powered securely by your Local GPU!**
+## Step 10: Configure Oracle Cloud APM (OpenTelemetry)
+DriveStream RAG is fully instrumented with OpenTelemetry to track request tracing (RAG latency) and system metrics (RAM, CPU, Disk I/O) via Oracle Cloud Infrastructure (OCI) Application Performance Monitoring (APM).
+
+1. Log into your **Oracle Cloud Console**.
+2. Navigate to **Observability & Management > Application Performance Monitoring > Administration**.
+3. Select your APM Domain (create one if necessary).
+4. Locate your **Data Upload Endpoint** and your private **Data Key**.
+5. SSH into your VM and update your `.env` file:
+   ```env
+   OCI_APM_ENDPOINT=https://<your-hash>.apm-agi.us-ashburn-1.oci.oraclecloud.com/20200101/opentelemetry/public/v1/traces
+   OCI_APM_DATA_KEY=your_private_data_key
+   ```
+6. Restart the application:
+   ```bash
+   sudo systemctl restart rag-mcp
+   ```
+7. Open the **Trace Explorer** and **Metrics Explorer** in OCI to view live performance graphs!
+
+**Congratulations! You now have a fully automated, HTTPS-secured Oracle Cloud Web App powered securely by your Local GPU, with full observability and tracing!**
