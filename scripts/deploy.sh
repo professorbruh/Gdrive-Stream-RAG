@@ -26,6 +26,8 @@ fi
 # 4. Install dependencies
 echo "Installing dependencies..."
 source .venv/bin/activate
+# Pre-install CPU-only PyTorch so it doesn't download 4GB of NVIDIA CUDA libraries on the cloud
+pip install torch --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements.txt
 
 # 5. Setup Caddy (Reverse Proxy) if not installed
