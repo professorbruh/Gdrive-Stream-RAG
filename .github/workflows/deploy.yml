@@ -65,14 +65,19 @@ jobs:
           key: ${{ secrets.OCI_SSH_KEY }}
           envs: APP_DOMAIN,HF_TOKEN,LLM_MODE,LLM_REMOTE_URL,LLM_API_KEY,OCI_APM_ENDPOINT,OCI_APM_DATA_KEY
           script: |
-            # Export the variables for the deployment script
+            # Export the variables and generate the .env file directly on the VM
             export APP_DOMAIN=$APP_DOMAIN
-            export HF_TOKEN=$HF_TOKEN
-            export LLM_MODE=$LLM_MODE
-            export LLM_REMOTE_URL=$LLM_REMOTE_URL
-            export LLM_API_KEY=$LLM_API_KEY
-            export OCI_APM_ENDPOINT=$OCI_APM_ENDPOINT
-            export OCI_APM_DATA_KEY=$OCI_APM_DATA_KEY
+            
+            echo "Generating .env file from CI/CD secrets..."
+            cat <<EOF > ~/Gdrive-Stream-RAG/.env
+            HF_TOKEN=$HF_TOKEN
+            LLM_MODE=$LLM_MODE
+            LLM_REMOTE_URL=$LLM_REMOTE_URL
+            LLM_API_KEY=$LLM_API_KEY
+            OCI_APM_ENDPOINT=$OCI_APM_ENDPOINT
+            OCI_APM_DATA_KEY=$OCI_APM_DATA_KEY
+            EOF
+            chmod 600 ~/Gdrive-Stream-RAG/.env
             
             # Run the deployment script on the Oracle VM
             bash ~/Gdrive-Stream-RAG/scripts/deploy.sh
