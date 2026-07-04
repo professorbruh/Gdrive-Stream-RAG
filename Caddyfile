@@ -1,0 +1,9 @@
+# Caddyfile for DriveStream RAG-MCP
+# This handles automatic Let's Encrypt SSL certificates and HTTPS redirection.
+
+# Replace the domain below with your actual DuckDNS domain!
+# Example: drivestream-ai.duckdns.org
+YOUR_DOMAIN_PLACEHOLDER {
+    # Route all traffic to the local FastAPI server
+    reverse_proxy localhost:8000
+}

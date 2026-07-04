@@ -8,12 +8,12 @@ User=youruser
 Group=youruser
 
 # Define the working directory and environment path
-WorkingDirectory=/home/youruser/rag-mcp
-Environment="PATH=/home/youruser/rag-mcp/.venv/bin"
+WorkingDirectory=/home/youruser/Gdrive-Stream-RAG
+Environment="PATH=/home/youruser/Gdrive-Stream-RAG/.venv/bin"
 
 # Start the web server on port 80 (requires authbind or port forwarding if not run as root)
 # Alternatively, leave as 8000 and use Nginx to reverse proxy port 80 -> 8000
-ExecStart=/home/youruser/rag-mcp/.venv/bin/python run.py web
+ExecStart=/home/youruser/Gdrive-Stream-RAG/.venv/bin/python run.py web
 
 # Automatically restart if the process crashes
 Restart=always

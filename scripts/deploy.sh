@@ -3,7 +3,7 @@
 
 set -e
 
-APP_DIR="$HOME/rag-mcp"
+APP_DIR="$HOME/Gdrive-Stream-RAG"
 echo "Starting deployment for DriveStream RAG-MCP..."
 
 # 1. Ensure directory exists and navigate to it

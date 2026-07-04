@@ -23,4 +23,4 @@ jobs:
             export APP_DOMAIN=$APP_DOMAIN
             
             # Run the deployment script on the Oracle VM
-            bash ~/rag-mcp/scripts/deploy.sh
+            bash ~/Gdrive-Stream-RAG/scripts/deploy.sh
