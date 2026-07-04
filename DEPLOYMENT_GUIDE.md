@@ -130,7 +130,11 @@ Once it's green, go to `https://your-domain.duckdns.org` in your browser. You wi
 
 ## Step 9: Start your Local GPU (The Brains)
 Because you set `LLM_MODE=remote` on the cloud, the Oracle Cloud server expects your local PC to generate the answers securely.
-1. On your local RTX 5070 PC, set the exact same API key in your environment variables:
+1. On your local RTX 5070 PC, ensure you have the heavy GPU dependencies installed:
+   ```bash
+   pip install -r requirements-gpu.txt
+   ```
+2. Set the exact same API key in your environment variables:
    - On Windows (PowerShell): `$env:LLM_API_KEY="your_super_secret_password_here"`
 2. Start the Local GPU server:
    ```bash
